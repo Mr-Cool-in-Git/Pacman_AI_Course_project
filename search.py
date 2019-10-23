@@ -100,7 +100,7 @@ def depthFirstSearch(problem):
             # need to figure out how to delete all of the nodes that has got us there, not just the last step...
             actions_list.pop()
             if len(actions_list) is not 0:
-                current_state = actions_list[-1][0]
+                current_state = actions_list[-1][0]   
             else:
                 current_state = start
                 break
