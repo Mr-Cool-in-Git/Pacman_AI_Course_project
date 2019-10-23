@@ -91,7 +91,7 @@ def depthFirstSearch(problem):
     start = problem.getStartState()
     current_state = start
     visited = set()
-    actions_list = []
+    actions_list = []   
     while problem.isGoalState(current_state) is False:
         successors_list = problem.getSuccessors(current_state)
         while check_if_all_successors_been_visited(successors_list, visited):
