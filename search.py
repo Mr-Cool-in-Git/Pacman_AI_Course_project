@@ -73,59 +73,52 @@ def tinyMazeSearch(problem):
     return  [s, s, w, s, w, w, s, w]
 
 def depthFirstSearch(problem):
-    """
-    Search the deepest nodes in the search tree first.
+    startState = problem.getStartState()
+    stack = util.Stack()
+    stack.push((startState, []))
+    alreadyVisitedStates = []
 
-    Your search algorithm needs to return a list of actions that reaches the
-    goal. Make sure to implement a graph search algorithm.
+    while stack.isEmpty() is False:
+        currItem = stack.pop()
+        currState = currItem[0]
+        currPath = currItem[1]
+        if problem.isGoalState(currState) is True:
+            return currPath
 
-    To get started, you might want to try some of these simple commands to
-    understand the search problem that is being passed in:
+        if currState not in alreadyVisitedStates:
+            alreadyVisitedStates.append(currState)
 
-    print "Start:", problem.getStartState()
-    print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-    print "Start's successors:", problem.getSuccessors(problem.getStartState())
-    """
-
-    dfs_stack = util.Stack() # stack for DFS implementation
-    start = problem.getStartState()
-    current_state = start
-    visited = set()
-    actions_list = []
-    while problem.isGoalState(current_state) is False:
-        successors_list = problem.getSuccessors(current_state)
-        while check_if_all_successors_been_visited(successors_list, visited):
-            # this happens when we are going up in the tree because we did not find the solution anywhere below,
-            # meaning these actions are not relevant for the solution, therefor deleted from actions list.
-            # need to figure out how to delete all of the nodes that has got us there, not just the last step...
-            actions_list.pop()
-            if len(actions_list) is not 0:
-                current_state = actions_list[-1][0]
-            else:
-                current_state = start
-                break
-            successors_list = problem.getSuccessors(current_state)
-        visited.add(current_state)
-        for item in successors_list:  # adding the successors to the stack
-            if item[0] not in visited:
-                dfs_stack.push(item)
-        current_node = dfs_stack.pop()
-        current_state = current_node[0]
-        actions_list.append(current_node)
-    actions_list = [item[1] for item in actions_list]
-    return actions_list
-
-
-def check_if_all_successors_been_visited(lst, set_1):
-    for item in lst:
-        if item not in set_1:
-            return False
-    return True
+            # expand current state
+            successors = problem.getSuccessors(currState)
+            for successor in successors:
+                if successor[0] not in alreadyVisitedStates:
+                    newPath = currPath + [successor[1]]
+                    stack.push((successor[0], newPath))
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    #successors = nodes
+    startState = problem.getStartState()
+    queue = util.Queue()
+    queue.push((startState, []))
+    alreadyVisitedStates = []
+
+    while queue.isEmpty() is False:
+        currItem = queue.pop()
+        currState = currItem[0]
+        currPath = currItem[1]
+        if problem.isGoalState(currState) is True:
+            return currPath
+
+        if currState not in alreadyVisitedStates:
+            alreadyVisitedStates.append(currState)
+
+            # expand current state
+            successors = problem.getSuccessors(currState)
+            for successor in successors:
+                if successor[0] not in alreadyVisitedStates:
+                    newPath = currPath + [successor[1]]
+                    queue.push((successor[0], newPath))
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
