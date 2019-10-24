@@ -266,6 +266,19 @@ def euclideanHeuristic(position, problem, info={}):
 # This portion is incomplete.  Time to write code!  #
 #####################################################
 
+
+def calcNewCornersReached(coordinates, oldCornersReached, corners):
+    index = 0
+    newCornersReached = list(oldCornersReached)
+    for corner in corners:
+        if corner[0] == coordinates[0] and corner[1] == coordinates[1]:
+            newCornersReached[index] = True
+
+        index = index+1
+
+    return tuple(newCornersReached)
+
+
 class CornersProblem(search.SearchProblem):
     """
     This search problem finds paths through all four corners of a layout.
@@ -294,15 +307,15 @@ class CornersProblem(search.SearchProblem):
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return (self.startingPosition,
+                calcNewCornersReached(self.startingPosition, (False, False, False, False), self.corners))
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        reachedCornes = state[1]
+        return reachedCornes[0] and reachedCornes[1] and reachedCornes[2] and reachedCornes[3]
 
     def getSuccessors(self, state):
         """
@@ -317,15 +330,16 @@ class CornersProblem(search.SearchProblem):
 
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
-            # Add a successor state to the successor list if the action is legal
-            # Here's a code snippet for figuring out whether a new position hits a wall:
-            #   x,y = currentPosition
-            #   dx, dy = Actions.directionToVector(action)
-            #   nextx, nexty = int(x + dx), int(y + dy)
-            #   hitsWall = self.walls[nextx][nexty]
+            x, y = state[0]
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            hitsWall = self.walls[nextx][nexty]
 
-            "*** YOUR CODE HERE ***"
-
+            if hitsWall is False:
+                successorCoordinates = (nextx, nexty)
+                successor = ((successorCoordinates,
+                              calcNewCornersReached(successorCoordinates, state[1], self.corners)), action, 1)
+                successors.append(successor)
         self._expanded += 1 # DO NOT CHANGE
         return successors
 
@@ -478,16 +492,9 @@ class ClosestDotSearchAgent(SearchAgent):
         Returns a path (a list of actions) to the closest dot, starting from
         gameState.
         """
-        # Here are some useful elements of the startState
-        startPosition = gameState.getPacmanPosition()
-        food = gameState.getFood()
-        walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
 
-
-
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return search.astar(problem)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -520,10 +527,8 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         The state is Pacman's position. Fill this in with a goal test that will
         complete the problem definition.
         """
-        x,y = state
-
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        x, y = state
+        return self.food[x][y]
 
 def mazeDistance(point1, point2, gameState):
     """
